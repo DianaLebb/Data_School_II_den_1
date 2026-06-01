@@ -69,6 +69,7 @@ Most people are not afraid of data. They are afraid of not knowing **where they 
 
 **Anxiety reducer:** If you forget a command name, look it up. If something breaks, read the error message. The pattern matters more than memory.
 
+**Reading code in this manual:** After most command blocks you will find a table breaking down **each part** — program names, flags like `-lh`, pipes `|`, `$variables`, and `$(command substitution)`.
 
 ---
 
@@ -109,6 +110,14 @@ uname -a
 pwd
 ```
 
+| Line | Part | Meaning |
+|------|------|---------|
+| `echo $SHELL` | `echo` | Print text to the screen |
+| | `$SHELL` | **`$` = variable.** The shell replaces `$SHELL` with the path to your current shell program (e.g. `/bin/zsh`) |
+| `uname -a` | `uname` | **Unix name** — reports operating system information |
+| | `-a` | **a**ll details (kernel, machine type, OS version) |
+| `pwd` | `pwd` | **p**rint **w**orking **d**irectory — full path of the folder you are in now |
+
 | Good sign | Bad sign (for this workshop) |
 |-----------|------------------------------|
 | `/bin/bash` or `/bin/zsh` | PowerShell |
@@ -142,7 +151,7 @@ In **Section 8** you decompress one file into `analysis/01_qc/toy_1.fq` to learn
 
 See [cheatsheet/terminal_overview.md](cheatsheet/terminal_overview.md) for a quick command reference.
 
-Run `pwd`. You should be in the workshop root (the folder containing `data/` and `WORKSHOP_MANUAL.md`).
+Run `pwd` — **p**rint **w**orking **d**irectory; you should be in the workshop root (the folder containing `data/` and `WORKSHOP_MANUAL.md`).
 
 ---
 
@@ -220,7 +229,17 @@ terminal → shell → program → input file → output
 gzip -dc data/raw/toy_1.fastq.gz | head -n 4
 ```
 
-Here `gzip -dc` is the program, `data/raw/toy_1.fastq.gz` is input, and `head -n 4` is a *second* program connected by a **pipe** (`|`). The shell runs them left to right: decompress → show first 4 lines.
+| Part | Meaning |
+|------|---------|
+| `gzip` | Program that works with `.gz` compressed files |
+| `-d` | **d**ecompress |
+| `-c` | Write result to the screen (stdout), **not** to a new file on disk |
+| `data/raw/toy_1.fastq.gz` | Input file path |
+| `\|` | **Pipe** — send output of the left command into the right command |
+| `head` | Show the start of the text stream |
+| `-n 4` | Exactly **4 lines** (one FASTQ read) |
+
+The shell runs left to right: decompress in memory → show first 4 lines. Nothing is written back to `data/raw/`.
 
 ## Command: `head`
 
@@ -235,6 +254,14 @@ Here `gzip -dc` is the program, `data/raw/toy_1.fastq.gz` is input, and `head -n
 ```bash
 head -n 5 data/metadata/samples.tsv
 ```
+
+| Part | Meaning |
+|------|---------|
+| `head` | Show the **start** of a file |
+| `-n 5` | **n**umber of lines: exactly 5 |
+| `data/metadata/samples.tsv` | Path to the metadata table (tab-separated values) |
+
+**Goal:** Peek at column names and a few sample rows without opening Excel.
 
 ## Debrief
 
@@ -260,6 +287,14 @@ grep macroglobulin data/reference/proteins.fa
 gzip -dc data/raw/toy_1.fastq.gz | wc -l
 cut -f 1 data/metadata/samples.tsv
 ```
+
+| Command | Program | Options | Input |
+|---------|---------|---------|-------|
+| `ls -lh` | `ls` | `-l` long format, `-h` human sizes | (current folder) |
+| `head -n 10 ...` | `head` | `-n 10` first 10 lines | `data/metadata/samples.tsv` |
+| `grep macroglobulin ...` | `grep` | (none) | pattern `macroglobulin`, file `proteins.fa` |
+| `gzip -dc ... \| wc -l` | `gzip` then `wc` | `-dc` decompress to stdout; `-l` count lines | `.fastq.gz` file, then pipe |
+| `cut -f 1 ...` | `cut` | `-f 1` first column | `samples.tsv` |
 
 See [exercises/exercise_01_command_anatomy.md](exercises/exercise_01_command_anatomy.md).
 
@@ -308,6 +343,13 @@ echo $SHELL
 uname -a
 pwd
 ```
+
+| Line | Part | Meaning |
+|------|------|---------|
+| `echo $SHELL` | `echo` | Print text |
+| | `$SHELL` | **`$` expands a variable.** `$SHELL` becomes the path to your shell (e.g. `/bin/bash`) |
+| `uname -a` | `uname -a` | Print OS and kernel details |
+| `pwd` | `pwd` | Print **where you are** in the folder tree |
 
 ## Your turn
 
@@ -359,6 +401,13 @@ Lists file and folder **names** in the current directory. No options = short lis
 ls -lh data/raw/
 ```
 
+| Part | Meaning |
+|------|---------|
+| `ls` | **L**i**s**t files in a folder |
+| `-l` | **L**ong format (size, date, permissions) |
+| `-h` | **H**uman-readable sizes (KB, MB instead of bytes) |
+| `data/raw/` | Folder to list (sequencing read downloads) |
+
 You should see sizes like `182K` for `toy_1.fastq.gz` instead of a raw byte count.
 
 ## Command: `ls -la`
@@ -374,6 +423,12 @@ You should see sizes like `182K` for `toy_1.fastq.gz` instead of a raw byte coun
 ```bash
 ls -la
 ```
+
+| Part | Meaning |
+|------|---------|
+| `ls` | List program |
+| `-l` | Long format (size, date, permissions) |
+| `-a` | **A**ll files, including **hidden** names starting with `.` |
 
 After you create `analysis/` in Section 7, `ls -la` in the project root will show that new folder alongside `data/` and `scripts/`.
 
@@ -412,6 +467,18 @@ ls -lh
 cd ../..
 ```
 
+| Line | Meaning |
+|------|---------|
+| `pwd` | Where am I? |
+| `ls` | Names in current folder |
+| `ls -lh` | List with human-readable file sizes |
+| `ls -la` | List all files including hidden |
+| `cd data` | Move **into** the `data/` subfolder |
+| `ls` | List inside `data/` |
+| `cd raw` | Move into `data/raw/` |
+| `ls -lh` | List FASTQ files with sizes |
+| `cd ../..` | Go **up two levels** (`..` = parent folder, twice = back to workshop root) |
+
 ## Your turn: treasure hunt
 
 1. Print your current location
@@ -433,6 +500,14 @@ cd ../..
 cd data/metadata
 ls
 ```
+
+| Line | Meaning |
+|------|---------|
+| `pwd` | Confirm starting location |
+| `cd data/raw` | Enter the raw sequencing folder |
+| `cd ../..` | From `data/raw/`, go up to `data/` then to workshop root |
+| `cd data/metadata` | Enter metadata folder from root |
+| `ls` | Confirm `samples.tsv` is listed |
 
 ## Common errors
 
@@ -480,7 +555,14 @@ From the workshop root, type:
 cd da
 ```
 
-Press **Tab**. It should complete to `data/`.
+| Part | Meaning |
+|------|---------|
+| `cd` | **C**hange **d**irectory |
+| `da` | Start of folder name — incomplete on purpose |
+
+Press **Tab**. The shell **autocompletes** `da` → `data/`.
+
+You still need to press **Enter** after Tab to run the command.
 
 ## Let's practice: deliberate hang
 
@@ -488,7 +570,11 @@ Press **Tab**. It should complete to `data/`.
 cat
 ```
 
-The terminal waits for input. Press **Ctrl + C** to stop.
+| Part | Meaning |
+|------|---------|
+| `cat` | **Cat**enate / print input. With **no file**, it waits for you to type text |
+
+The terminal waits for input. Press **Ctrl + C** to stop the waiting command.
 
 **Tab on long filenames:** Type `gzip -dc data/raw/toy` and press Tab twice if needed, the shell completes `toy_1.fastq.gz` or offers both files. This saves typing and prevents typos in paths.
 
@@ -513,7 +599,13 @@ Understand file addresses and protect raw data.
 data/raw/toy_1.fastq.gz
 ```
 
-means: go to `data` → then `raw` → then open `toy_1.fastq.gz`.
+| Part | Meaning |
+|------|---------|
+| `data/` | First folder from where you stand |
+| `raw/` | Subfolder inside `data/` |
+| `toy_1.fastq.gz` | Filename (the `/` characters are **separators**, not commands) |
+
+This is a **path** (an address), not a command. It means: go to `data` → then `raw` → then the file `toy_1.fastq.gz`.
 
 ## Safety traffic light
 
@@ -549,6 +641,14 @@ mkdir -p analysis/01_qc analysis/02_metadata
 ls -la
 ```
 
+| Line / part | Meaning |
+|-------------|---------|
+| `mkdir` | **M**a**k**e **dir**ectory (create folders) |
+| `-p` | Create **p**arent folders as needed; do not error if folder already exists |
+| `analysis/01_qc` | QC output folder (numbered step name) |
+| `analysis/02_metadata` | Metadata summary folder |
+| `ls -la` | List all files in current folder to **confirm** new folders exist |
+
 | Folder | Purpose |
 |--------|---------|
 | `analysis/01_qc/` | QC outputs (line counts, later FastQC) |
@@ -564,6 +664,16 @@ cp data/metadata/samples.tsv my_analysis/
 ls data/metadata/          # original still here
 ls my_analysis/            # your copy
 ```
+
+| Line | Meaning |
+|------|---------|
+| `mkdir -p my_analysis/analysis/01_qc` | Create a **practice project** tree in one command |
+| `cp source dest` | **C**o**p**y — duplicate file; original stays |
+| `data/metadata/samples.tsv` | Source file (read-only workshop data) |
+| `my_analysis/` | Destination folder (your copy lands here) |
+| `ls data/metadata/` | Verify original is **unchanged** |
+| `ls my_analysis/` | Verify copy exists |
+| `# comment` | Text after `#` is ignored by the shell (notes for humans) |
 
 **Example:** In a real lab, you might copy a sample sheet into a new project folder while leaving the original download archive untouched on a shared drive.
 
@@ -592,6 +702,13 @@ wc -l data/metadata/samples.tsv
 grep tumour data/metadata/samples.tsv | head -n 3
 ```
 
+| Line | Meaning |
+|------|---------|
+| `head -n 5 ...` | First 5 lines of the table |
+| `wc -l ...` | **W**ord **c**ount, **l**ines only — total rows including header |
+| `grep tumour ...` | Lines containing the text `tumour` |
+| `\| head -n 3` | Pipe: show only the **first 3** matching lines |
+
 | Command | What it does on plain files |
 |---------|----------------------------|
 | `head -n 5 file` | First 5 lines |
@@ -607,6 +724,12 @@ head -n 5 data/reference/proteins.fa
 head -n 5 data/annotation/pseudogenes_chr1.gff
 grep -c "^>" data/reference/proteins_9seqs.fa
 ```
+
+| Line | Meaning |
+|------|---------|
+| `head -n 5 proteins.fa` | First 5 lines — FASTA headers start with `>` |
+| `head -n 5 pseudogenes_chr1.gff` | First 5 lines of genome annotation |
+| `grep -c "^>" proteins_9seqs.fa` | **C**ount lines starting with `>` (`^` = start of line) = number of protein sequences |
 
 Lines starting with `#` in GFF are metadata comments; data rows describe genomic features.
 
@@ -639,6 +762,12 @@ head -n 8 analysis/01_qc/toy_1.fq
 wc -l analysis/01_qc/toy_1.fq
 grep -c "^@" analysis/01_qc/toy_1.fq
 ```
+
+| Line | Meaning |
+|------|---------|
+| `head -n 8 ...` | First 8 lines = **2 reads** (FASTQ uses 4 lines per read) |
+| `wc -l ...` | Total line count (expect **10000**) |
+| `grep -c "^@" ...` | Count lines starting with `@` (read headers) — another way to count reads |
 
 **Read count** = lines ÷ 4 (expect **10000** lines → **2500** reads).
 
@@ -681,6 +810,15 @@ wc -l analysis/01_qc/toy_1.fq
 ls -lh data/raw/
 ls -lh analysis/01_qc/
 ```
+
+| Line | Meaning |
+|------|---------|
+| Lines 1–2 | Inspect plain metadata and protein files |
+| `gunzip -c ... > analysis/01_qc/toy_1.fq` | Decompress to **stdout** (`-c`), **redirect** (`>`) into a new plain file in `analysis/` |
+| `head -n 8 ...` | View first 2 reads in the plain file |
+| `wc -l ...` | Count lines in plain FASTQ |
+| `ls -lh data/raw/` | Confirm `.gz` archive still in raw data folder |
+| `ls -lh analysis/01_qc/` | Confirm new `.fq` file was created |
 
 Notice `toy_1.fastq.gz` remains in `data/raw/`. You created `toy_1.fq` in `analysis/01_qc/`. **`head` on the `.gz` file still shows gibberish** until you stream it (Section 9).
 
@@ -728,11 +866,22 @@ data/raw/toy_1.fastq.gz  ──gzip -dc──►  text in memory ──►  head
 gunzip data/raw/toy_1.fastq.gz    # ❌ destroys the .gz archive in place
 ```
 
+| Part | Meaning |
+|------|---------|
+| `gunzip file.gz` | Decompress **in place** — replaces `.gz` with plain file and **deletes** the archive |
+| `# ❌ ...` | Comment explaining why this is unsafe on raw downloads |
+
 **Instead:**
 
 ```bash
 gzip -dc data/raw/toy_1.fastq.gz | head -n 8    # ✅ read first 2 reads only
 ```
+
+| Part | Meaning |
+|------|---------|
+| `gzip -dc` | Decompress to a **stream** in memory |
+| `\| head -n 8` | Take only first 8 lines (2 reads) from that stream |
+| `# ✅ ...` | Comment — safe: original `.gz` untouched |
 
 **Analogy:** A `.fastq.gz` file is like a sealed zip bag of reads. `gzip -dc` is a pipe that lets you sniff the contents without emptying the bag onto the floor.
 
@@ -766,6 +915,16 @@ gzip -dc data/raw/toy_1.fastq.gz | wc -l
 zgrep "^@" data/raw/toy_1.fastq.gz | head -n 3
 ```
 
+| Line | Meaning |
+|------|---------|
+| `ls -lh data/raw/*.fastq.gz` | List **all** `.fastq.gz` files; `*` = wildcard (any name) |
+| `gzip -l file.gz` | Show compressed vs uncompressed size **without** decompressing |
+| `gzip -dc ... \| head -n 8` | Stream-decompress, show first 2 reads |
+| `gzip -dc ... \| wc -l` | Stream-decompress, count text lines (not compressed bytes) |
+| `zgrep "^@" file.gz` | Search **inside** `.gz` for lines starting with `@` (read headers) |
+| `\| head -n 3` | Show only first 3 matches |
+| `# ...` | Comment — ignored by shell, notes for you |
+
 ## Expected results
 
 | Command | Expected |
@@ -787,6 +946,21 @@ do
     echo "Lines: $lines  Reads: $reads"
 done
 ```
+
+| Line / part | Meaning |
+|-------------|---------|
+| `for f in data/raw/*.fastq.gz` | **Loop:** run the block once for each matching file; store filename in variable `f` |
+| `*.fastq.gz` | Wildcard — every file ending in `.fastq.gz` |
+| `do` … `done` | Start and end of the loop body |
+| `echo "=== $f ==="` | Print a banner line; **`$f`** = insert current filename (e.g. `=== data/raw/toy_1.fastq.gz ===`) |
+| `lines=$( ... )` | **Command substitution:** run command inside `$(...)`, store its output in variable `lines` |
+| `gzip -dc "$f"` | Stream-decompress the current file; **`"$f"`** = filename in quotes (safe if names have spaces) |
+| `\| wc -l` | Count lines in the decompressed stream |
+| `\| tr -d ' '` | **Tr**anslate/delete spaces — `wc` may pad with spaces; this keeps only digits |
+| `reads=$((lines / 4))` | **Arithmetic:** `$(( ))` calculates `lines ÷ 4` (4 lines per FASTQ read) |
+| `echo "Lines: $lines  Reads: $reads"` | Print results; **`$lines`** and **`$reads`** expand to stored numbers |
+
+**About `$`:** `$name` means “replace with the value of variable `name`”. Without `$`, the shell treats `f` as plain text.
 
 ## Your turn
 
@@ -821,6 +995,11 @@ Learn that errors are normal, interpretable, and recoverable.
 ls wrong_folder
 ```
 
+| Part | Meaning |
+|------|---------|
+| `ls` | List program |
+| `wrong_folder` | Folder name that does **not** exist from your current location |
+
 ```text
 ls: wrong_folder: No such file or directory
 ```
@@ -833,6 +1012,12 @@ ls: wrong_folder: No such file or directory
 grepp macroglobulin data/reference/proteins.fa
 ```
 
+| Part | Meaning |
+|------|---------|
+| `grepp` | **Typo** — no program with this name exists |
+| `macroglobulin` | Search pattern (would be correct with `grep`) |
+| `data/reference/proteins.fa` | Input file |
+
 ```text
 bash: grepp: command not found
 ```
@@ -844,6 +1029,11 @@ bash: grepp: command not found
 ```bash
 grep "DDX11L1 data/annotation/pseudogenes_chr1.gff
 ```
+
+| Problem | Meaning |
+|---------|---------|
+| Opening `"` | Shell expects a closing `"` before the command ends |
+| Missing closing quote | Shell thinks you are still typing — command never finishes |
 
 Terminal waits. **Recovery:** Ctrl + C
 
@@ -877,6 +1067,12 @@ Search structured text files. This is a core bioinformatics skill.
 grep "DDX11L1" data/annotation/pseudogenes_chr1.gff
 ```
 
+| Part | Meaning |
+|------|---------|
+| `grep` | Search program |
+| `"DDX11L1"` | Text pattern to find (quotes keep it one argument) |
+| `data/annotation/pseudogenes_chr1.gff` | File to search |
+
 ## Command: `grep -c`
 
 | Part | Meaning |
@@ -889,6 +1085,12 @@ grep "DDX11L1" data/annotation/pseudogenes_chr1.gff
 grep -c "^>" data/reference/proteins_9seqs.fa
 ```
 
+| Part | Meaning |
+|------|---------|
+| `grep -c` | **C**ount matching lines only (prints a number) |
+| `"^>"` | Pattern: line **starts** with `>` (FASTA header) |
+| `proteins_9seqs.fa` | Protein FASTA file |
+
 ## Command: `grep -v`
 
 | Part | Meaning |
@@ -900,6 +1102,12 @@ grep -c "^>" data/reference/proteins_9seqs.fa
 ```bash
 grep -v "^#" data/variants/variants.vcf
 ```
+
+| Part | Meaning |
+|------|---------|
+| `grep -v` | **V**invert — show lines that do **not** match |
+| `"^#"` | Pattern: line starts with `#` (VCF header/comment lines) |
+| `variants.vcf` | Variant call file |
 
 ## Pattern: `^` (start of line)
 
@@ -941,6 +1149,16 @@ grep -v "^#" data/variants/variants.vcf
 grep -v "^#" data/annotation/pseudogenes_chr1.gff | head
 ```
 
+| Line | Meaning |
+|------|---------|
+| `grep "^>" ...` | List FASTA header lines |
+| `grep -c "^>" ...` | Count sequences (expect **9**) |
+| `grep "macroglobulin" ...` | Find protein name in descriptions |
+| `grep "DDX11L1" ...` | Find gene name in GFF annotation |
+| `grep "pseudogene" ...` | Find feature type in GFF |
+| `grep -v "^#" variants.vcf` | Show variant rows only (skip `#` header lines) |
+| `grep -v "^#" gff \| head` | Non-comment GFF lines, first 10 only |
+
 ## Your turn
 
 See [exercises/exercise_07_grep.md](exercises/exercise_07_grep.md).
@@ -975,6 +1193,12 @@ ls -lh data/raw/*.fastq.gz
 ls data/reference/*.fa
 ```
 
+| Line | Meaning |
+|------|---------|
+| `data/raw/*.fastq.gz` | Wildcard `*` = all files matching this pattern in `data/raw/` |
+| `ls -lh ...` | List those files with human-readable sizes |
+| `data/reference/*.fa` | All FASTA files in `reference/` |
+
 ## Count lines in every `.fastq.gz` with a loop
 
 ```bash
@@ -985,6 +1209,12 @@ do
 done
 ```
 
+| Line / part | Meaning |
+|-------------|---------|
+| `for f in ...` | Loop variable `f` takes each filename in turn |
+| `lines=$(gzip -dc "$f" \| wc -l \| tr -d ' ')` | Decompress, count lines, strip spaces, store in `lines` |
+| `echo "$lines $f"` | Print line count and filename on one line |
+
 Expected: **10000** lines per file → **2500 reads** each.
 
 ## Your turn
@@ -993,6 +1223,13 @@ Expected: **10000** lines per file → **2500 reads** each.
 ls data/raw/*.fastq.gz
 for f in data/raw/*.fastq.gz; do echo "$f"; gzip -dc "$f" | wc -l; done
 ```
+
+| Line | Meaning |
+|------|---------|
+| `ls data/raw/*.fastq.gz` | List all compressed FASTQ files |
+| `for f in ...; do ...; done` | One-line loop form (`;` separates commands on one line) |
+| `echo "$f"` | Print current filename |
+| `gzip -dc "$f" \| wc -l` | Line count for that file (may include leading spaces from `wc`) |
 
 ## Debrief
 
@@ -1039,6 +1276,12 @@ cut column 3  →  sort values  →  count unique values
 cut -f 3 data/metadata/samples.tsv | sort | uniq -c
 ```
 
+| Part | Meaning |
+|------|---------|
+| `cut -f 3` | **Cut** column **3** (tissue) from tab-separated file |
+| `\| sort` | Sort lines alphabetically so identical values sit together |
+| `\| uniq -c` | **C**ount **uniq**ue neighbouring lines |
+
 ## Let's practice
 
 ```bash
@@ -1046,6 +1289,12 @@ cut -f 1 data/metadata/samples.tsv
 cut -f 3 data/metadata/samples.tsv | sort | uniq -c
 cut -f 5 data/metadata/samples.tsv | sort | uniq -c
 ```
+
+| Line | Meaning |
+|------|---------|
+| `cut -f 1 ...` | Print column 1 only (sample IDs) |
+| `cut -f 3 ... \| sort \| uniq -c` | Count samples per **tissue** type |
+| `cut -f 5 ... \| sort \| uniq -c` | Count samples per **batch** |
 
 ## Your turn
 
@@ -1088,6 +1337,15 @@ cat analysis/01_qc/fastq_line_counts.txt
 ls -lh analysis/01_qc/ analysis/02_metadata/
 ```
 
+| Line / part | Meaning |
+|-------------|---------|
+| `mkdir -p ...` | Ensure output folders exist |
+| `for f in ...` … `done > file` | **`>` after `done`** saves **all** loop output into the file (overwrites if file exists) |
+| `echo "$lines $f"` | One line per FASTQ: count + filename |
+| `cut ... > tissue_counts.txt` | Save tissue summary to metadata folder |
+| `cat file` | Print saved file to screen to verify |
+| `ls -lh analysis/...` | Confirm files exist with sizes |
+
 ## Your turn
 
 1. Save FASTQ line counts to `analysis/01_qc/fastq_line_counts.txt`
@@ -1121,6 +1379,11 @@ Create and edit small text files in the terminal.
 nano analysis/02_metadata/workshop_notes.txt
 ```
 
+| Part | Meaning |
+|------|---------|
+| `nano` | Simple terminal text editor |
+| `analysis/02_metadata/workshop_notes.txt` | File to create or edit (path includes folder + filename) |
+
 | Shortcut | Action |
 |----------|--------|
 | Type normally | Enter text |
@@ -1143,6 +1406,11 @@ You will encounter vim on remote servers and HPC clusters. You only need to surv
 ```bash
 vim analysis/02_metadata/workshop_notes.txt
 ```
+
+| Part | Meaning |
+|------|---------|
+| `vim` | **Vi** **im**proved — powerful editor common on servers |
+| `analysis/02_metadata/workshop_notes.txt` | Same notes file as in the nano exercise |
 
 | Key | Action |
 |-----|--------|
@@ -1202,6 +1470,17 @@ awk -F '\t' 'NR > 1 && $3 == "tumour" {print $1}' data/metadata/samples.tsv
 awk -F '\t' 'NR > 1 && $3 == "tumour" {print $1}' data/metadata/samples.tsv > analysis/02_metadata/tumour_samples.txt
 ```
 
+| Line / part | Meaning |
+|-------------|---------|
+| `awk` | Column-aware text processor |
+| `-F '\t'` | **F**ield separator = tab (columns in TSV) |
+| `'{print $1, $3}'` | For each row, print column 1 and column 3 |
+| `$1`, `$3` | **`$` + number** = column 1, column 3 (awk field, not shell variable) |
+| `NR > 1` | **N**umber of **R**ecord — skip row 1 (header) |
+| `$3 == "tumour"` | Keep rows where column 3 equals `tumour` |
+| `{print $1}` | Print sample ID only |
+| `> analysis/02_metadata/tumour_samples.txt` | Save output to file |
+
 ## Your turn
 
 See [exercises/exercise_09_awk.md](exercises/exercise_09_awk.md).
@@ -1246,6 +1525,13 @@ ls -lh analysis/
 cat analysis/02_metadata/tumour_samples.txt
 ```
 
+| Line | Meaning |
+|------|---------|
+| `cat scripts/basic_report.sh` | Print the script text so you can read the recipe |
+| `bash scripts/basic_report.sh` | Run the script with the **bash** shell |
+| `ls -lh analysis/` | List new output files and sizes |
+| `cat analysis/02_metadata/tumour_samples.txt` | View one saved result |
+
 The script creates:
 
 - `analysis/01_qc/fastq_line_counts.txt`
@@ -1262,6 +1548,12 @@ do
     wc -l "$file"
 done
 ```
+
+| Line / part | Meaning |
+|-------------|---------|
+| `for file in ...` | Loop over each `.fastq.gz` file |
+| `echo "$file"` | Print filename |
+| `wc -l "$file"` | Count lines **in the compressed file on disk** — **wrong for `.gz`** (counts bytes, not reads). Prefer `gzip -dc "$file" \| wc -l` |
 
 ## Debrief
 
@@ -1291,6 +1583,16 @@ fastqc data/raw/toy_1.fastq.gz -o analysis/01_qc
 # Alignment (later course modules)
 STAR --readFilesIn toy_1.fq toy_2.fq --genomeDir STARref ...
 ```
+
+| Line / part | Meaning |
+|-------------|---------|
+| `# Quality control` | Comment — not run today |
+| `fastqc` | QC program for sequencing reads |
+| `data/raw/toy_1.fastq.gz` | Input reads |
+| `-o analysis/01_qc` | **O**utput folder for QC reports |
+| `STAR` | RNA-seq aligner (example only) |
+| `--readFilesIn toy_1.fq toy_2.fq` | Paired input files |
+| `--genomeDir STARref ...` | Reference index folder (`...` = more options omitted) |
 
 | Tool | Purpose |
 |------|---------|
@@ -1393,6 +1695,13 @@ Every FASTQ read header carries the run ID:
 zgrep -m1 "^@" data/raw/toy_1.fastq.gz
 ```
 
+| Part | Meaning |
+|------|---------|
+| `zgrep` | Search **inside** a `.gz` file (like `grep` + decompression) |
+| `-m1` | Stop after **1** match (**m**ax count) |
+| `"^@"` | Pattern: line starts with `@` (FASTQ read header) |
+| `data/raw/toy_1.fastq.gz` | Compressed FASTQ file |
+
 Example output:
 
 ```text
@@ -1406,6 +1715,12 @@ Extract it with grep:
 ```bash
 zgrep -m1 "^@" data/raw/toy_1.fastq.gz | grep -o 'SRR[0-9]*'
 ```
+
+| Part | Meaning |
+|------|---------|
+| `zgrep -m1 "^@" ...` | First read header from compressed FASTQ |
+| `\| grep -o 'SRR[0-9]*'` | Pipe to grep; **`-o`** print **o**nly the matching part |
+| `'SRR[0-9]*'` | Pattern: `SRR` followed by digits (run accession) |
 
 Expected: `SRR925709`
 
@@ -1442,6 +1757,11 @@ Compare the **first read** in your file with what the archive describes:
 gzip -dc data/raw/toy_1.fastq.gz | head -n 4
 ```
 
+| Part | Meaning |
+|------|---------|
+| `gzip -dc` | Stream-decompress to stdout |
+| `\| head -n 4` | First 4 lines = **one complete read** |
+
 Check:
 
 1. Header starts with `@SRR925709.1`
@@ -1454,17 +1774,40 @@ Optional, confirm ENA knows this run (requires internet):
 curl -s "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR925709&result=read_run&fields=run_accession,fastq_bytes,fastq_ftp&format=tsv"
 ```
 
+| Part | Meaning |
+|------|---------|
+| `curl` | Download or query a URL from the terminal |
+| `-s` | **S**ilent — hide progress meter |
+| `"https://..."` | ENA API URL asking for file report for run `SRR925709` |
+| `format=tsv` | Response as tab-separated text |
+
 You should see `SRR925709` in the output and FTP links to `.fastq.gz` files.
 
-### Step 4: Anyone can download the same data
+### Step 4: Anyone can download the same data (preview)
 
-The same accession in a public archive means anyone can obtain the same FASTQ and reproduce the same analysis:
+You will use dedicated tools later in the course (`prefetch`, `fasterq-dump`, or ENA FTP). The idea for today:
 
 ```text
 Accession SRR925709  →  public archive  →  same FASTQ anyone can download  →  same analysis possible
 ```
 
-You can look up `SRR925709` on [ENA](https://www.ebi.ac.uk/ena/browser/view/SRR925709) or [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/?term=SRR925709) and compare what you see with your local file.
+Example commands (**not run in this workshop**; require SRA tools installed):
+
+```bash
+# NCBI SRA Toolkit (later in course)
+prefetch SRR925709
+fasterq-dump SRR925709 --stdout | head -n 4
+```
+
+| Line | Meaning |
+|------|---------|
+| `# NCBI SRA Toolkit ...` | Comment — tools not installed in this workshop |
+| `prefetch SRR925709` | Download run data from NCBI SRA to local cache |
+| `fasterq-dump SRR925709` | Convert SRA format to FASTQ |
+| `--stdout` | Write FASTQ to screen instead of files |
+| `\| head -n 4` | Show first read only |
+
+The first four lines should match the start of our `toy_1.fastq.gz`.
 
 ### The same idea for other workshop files
 
@@ -1474,6 +1817,8 @@ You can look up `SRR925709` on [ENA](https://www.ebi.ac.uk/ena/browser/view/SRR9
 | Proteins (`proteins.fa`) | `NP_000005.3` etc. → https://www.ncbi.nlm.nih.gov/protein/NP_000005.3 |
 | GFF annotation | `GRCh38.p14` / `NC_000001.11` → NCBI Genome |
 | Metadata (`samples.tsv`) | Example cohort table for practising commands |
+
+See [data/DATA_SOURCES.md](data/DATA_SOURCES.md) for a full provenance table.
 
 ### Debrief
 
